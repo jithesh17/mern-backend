@@ -159,9 +159,30 @@ const deleteCourse = async (req, res) => {
       });
     }
 
+    // Find all sub courses belonging to this course
+    const subCourses = await SubCourse.find({
+      course: req.params.id,
+    });
+
+    // Get their names before deleting
+    const deletedSubCourses = subCourses.map(
+      (subCourse) => subCourse.sub
+    );
+
+    // Delete all related sub courses
+    await SubCourse.deleteMany({
+      course: req.params.id,
+    });
+
+    // Delete the parent course
+    await Course.findByIdAndDelete(req.params.id);
+
     res.status(200).json({
       message: "Course deleted successfully",
+      deletedCourse: course.course,
+      deletedSubCourses: deletedSubCourses,
     });
+
   } catch (error) {
     res.status(500).json({
       message: "Failed to delete course",

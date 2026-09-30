@@ -6,7 +6,12 @@ const connectDB = require("./config/db");
 
 const courseRoutes = require("./routes/courseRoutes");
 const trainerRoutes = require("./routes/trainerRoutes");
+<<<<<<< Updated upstream
 const allocationRoutes = require("./routes/allocationRoutes");
+=======
+const subCourseRoutes = require("./routes/subCourseRoutes");
+const studentRoutes = require("./routes/studentRoutes");
+>>>>>>> Stashed changes
 
 const app = express();
 
@@ -21,9 +26,16 @@ app.use("/uploads", express.static("uploads"));
 // Routes
 app.use("/api/courses", courseRoutes);
 app.use("/api/trainers", trainerRoutes);
+<<<<<<< Updated upstream
 app.use("/api/allocations", allocationRoutes);
 
 // Test route
+=======
+app.use("/api/subcourses", subCourseRoutes);
+app.use("/api/students", studentRoutes);
+connectDB();
+
+>>>>>>> Stashed changes
 app.get("/", (req, res) => {
   res.json({
     message: "Backend is running",
