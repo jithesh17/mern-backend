@@ -1,4 +1,5 @@
 const express = require("express");
+const multer = require("multer");
 
 const {
   createTrainer,
@@ -11,8 +12,22 @@ const {
 
 const router = express.Router();
 
+// Multer setup
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads");
+  },
+
+  filename: (req, file, cb) => {
+    const fileName = Date.now() + "-" + file.originalname;
+    cb(null, fileName);
+  },
+});
+
+const upload = multer({ storage });
+
 // CREATE
-router.post("/", createTrainer);
+router.post("/", upload.single("profile"), createTrainer);
 
 // GET ALL
 router.get("/", getTrainers);
@@ -20,11 +35,11 @@ router.get("/", getTrainers);
 // GET BY ID
 router.get("/:id", getTrainerById);
 
-// UPDATE - PUT
-router.put("/:id", updateTrainer);
+// PUT
+router.put("/:id", upload.single("profile"), updateTrainer);
 
-// UPDATE - PATCH
-router.patch("/:id", patchTrainer);
+// PATCH
+router.patch("/:id", upload.single("profile"), patchTrainer);
 
 // DELETE
 router.delete("/:id", deleteTrainer);

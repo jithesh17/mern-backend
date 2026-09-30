@@ -178,3 +178,4 @@ module.exports = {
   patchCourse,
   deleteCourse,
 };
+
