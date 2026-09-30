@@ -148,12 +148,14 @@ const patchCourse = async (req, res) => {
   }
 };
 
-// DELETE COURSE
+
+// DELETE COURSE + ITS SUB COURSES
 const deleteCourse = async (req, res) => {
   try {
-    const deletedCourse = await Course.findByIdAndDelete(req.params.id);
+    // Find the course first
+    const course = await Course.findById(req.params.id);
 
-    if (!deletedCourse) {w
+    if (!course) {
       return res.status(404).json({
         message: "Course not found",
       });
