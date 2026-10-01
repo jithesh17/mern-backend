@@ -103,7 +103,7 @@ const updateCourse = async (req, res) => {
     });
   }
 };
-
+  
 // PATCH COURSE
 const patchCourse = async (req, res) => {
   try {
@@ -179,6 +179,7 @@ const deleteCourse = async (req, res) => {
     // Delete the parent course
     await Course.findByIdAndDelete(req.params.id);
 
+  
     res.status(200).json({
       message: "Course deleted successfully",
       deletedCourse: course.course,
@@ -201,4 +202,3 @@ module.exports = {
   patchCourse,
   deleteCourse,
 };
-

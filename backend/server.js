@@ -10,6 +10,7 @@ const allocationRoutes = require("./routes/allocationRoutes");
 const subCourseRoutes = require("./routes/subCourseRoutes");
 const studentRoutes = require("./routes/studentRoutes");
 
+const studentReportRoutes = require("./routes/studentReportRoutes");
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/courses", courseRoutes);
 app.use("/api/trainers", trainerRoutes);
 app.use("/api/allocations", allocationRoutes);
+app.use("/api/student-report", studentReportRoutes);
 
 // Test route
 app.use("/api/subcourses", subCourseRoutes);
@@ -46,3 +48,5 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+

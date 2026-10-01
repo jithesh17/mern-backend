@@ -8,7 +8,7 @@ const trainerSchema = new mongoose.Schema(
       trim: true,
     },
 
-    department: {
+    course: {
       type: String,
       required: true,
       trim: true,

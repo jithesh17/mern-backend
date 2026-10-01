@@ -1,5 +1,4 @@
 const express = require("express");
-const multer = require("multer");
 
 const {
   createTrainer,
@@ -12,36 +11,35 @@ const {
 
 const router = express.Router();
 
-// Multer setup
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads");
-  },
 
-  filename: (req, file, cb) => {
-    const fileName = Date.now() + "-" + file.originalname;
-    cb(null, fileName);
-  },
-});
+// CREATE TRAINER
+// POST /api/trainers
+router.post("/", createTrainer);
 
-const upload = multer({ storage });
 
-// CREATE
-router.post("/", upload.single("profile"), createTrainer);
-
-// GET ALL
+// GET ALL TRAINERS
+// GET /api/trainers
 router.get("/", getTrainers);
 
-// GET BY ID
+
+// GET TRAINER BY ID
+// GET /api/trainers/:id
 router.get("/:id", getTrainerById);
 
-// PUT
-router.put("/:id", upload.single("profile"), updateTrainer);
 
-// PATCH
-router.patch("/:id", upload.single("profile"), patchTrainer);
+// UPDATE TRAINER
+// PUT /api/trainers/:id
+router.put("/:id", updateTrainer);
 
-// DELETE
+
+// PATCH TRAINER
+// PATCH /api/trainers/:id
+router.patch("/:id", patchTrainer);
+
+
+// DELETE TRAINER
+// DELETE /api/trainers/:id
 router.delete("/:id", deleteTrainer);
+
 
 module.exports = router;

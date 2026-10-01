@@ -1,16 +1,25 @@
 const mongoose = require("mongoose");
 
-const allocationSchema = new mongoose.Schema(
+const studentReportSchema = new mongoose.Schema(
   {
-    trainer: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Trainer",
+    student: {
+      type: String,
+      required: true,
+    },
+
+    course: {
+      type: String,
       required: true,
     },
 
     studentBatch: {
       type: String,
       required: true,
+    },
+
+    trainer: {
+      type: String,
+      default: "-",
     },
 
     startDate: {
@@ -20,12 +29,11 @@ const allocationSchema = new mongoose.Schema(
 
     endDate: {
       type: Date,
-      required: true,
     },
 
     status: {
       type: String,
-      enum: ["Active", "Inactive"],
+      enum: ["Active", "Completed", "Dropped"],
       default: "Active",
     },
   },
@@ -34,4 +42,4 @@ const allocationSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Allocation", allocationSchema);
+module.exports = mongoose.model("StudentReport", studentReportSchema);

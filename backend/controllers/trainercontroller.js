@@ -3,17 +3,17 @@ const Trainer = require("../models/trainer");
 // CREATE TRAINER
 const createTrainer = async (req, res) => {
   try {
-    const { name, department } = req.body;
+    const { name, course } = req.body;
 
-    if (!name || !department) {
+    if (!name || !course) {
       return res.status(400).json({
-        message: "Name and department are required",
+        message: "Name and course are required",
       });
     }     
 
     const trainer = await Trainer.create({
       name,
-      department,
+      course,
     });
 
     res.status(201).json({
@@ -65,13 +65,13 @@ const getTrainerById = async (req, res) => {
 // UPDATE TRAINER - PUT
 const updateTrainer = async (req, res) => {
   try {
-    const { name, department } = req.body;
+    const { name, course } = req.body;
 
     const updatedTrainer = await Trainer.findByIdAndUpdate(
       req.params.id,
       {
         name,
-        department,
+        course,
       },
       {
         new: true,
@@ -106,8 +106,8 @@ const patchTrainer = async (req, res) => {
       updateData.name = req.body.name;
     }
 
-    if (req.body.department !== undefined) {
-      updateData.department = req.body.department;
+    if (req.body.course!== undefined) {
+      updateData.course = req.body.course;
     }
 
     const updatedTrainer = await Trainer.findByIdAndUpdate(
