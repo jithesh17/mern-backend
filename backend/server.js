@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-
+const mcqRoutes = require("./routes/mcqRoutes");
 const connectDB = require("./config/db");
 
 const courseRoutes = require("./routes/courseRoutes");
@@ -9,6 +9,7 @@ const trainerRoutes = require("./routes/trainerRoutes");
 const allocationRoutes = require("./routes/allocationRoutes");
 const subCourseRoutes = require("./routes/subCourseRoutes");
 const studentRoutes = require("./routes/studentRoutes");
+
 
 const app = express();
 
@@ -28,7 +29,7 @@ app.use("/api/allocations", allocationRoutes);
 // Test route
 app.use("/api/subcourses", subCourseRoutes);
 app.use("/api/students", studentRoutes);
-connectDB();
+app.use("/api/mcq", mcqRoutes);
 
 app.get("/", (req, res) => {
   res.json({
