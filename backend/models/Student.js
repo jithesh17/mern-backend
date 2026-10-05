@@ -9,6 +9,13 @@ const studentSchema = new mongoose.Schema(
       trim: true,
     },
 
+    // Password
+    password: {
+      type: String,
+      required: true,
+      minlength: 6,
+    },
+
     // Course
     course: {
       type: mongoose.Schema.Types.ObjectId,

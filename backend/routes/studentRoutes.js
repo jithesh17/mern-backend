@@ -6,23 +6,51 @@ const {
   getStudentById,
   updateStudent,
   deleteStudent,
+  uploadStudentsFromExcel,
 } = require("../controllers/studentController");
+
+const uploadExcel = require("../middleware/uploadExcel");
 
 const router = express.Router();
 
-// CREATE
+// =====================================================
+// CREATE STUDENT
+// =====================================================
+
 router.post("/", createStudent);
 
-// GET ALL
+// =====================================================
+// UPLOAD STUDENTS FROM EXCEL
+// =====================================================
+
+router.post(
+  "/upload-excel",
+  uploadExcel.single("file"),
+  uploadStudentsFromExcel,
+);
+
+// =====================================================
+// GET ALL STUDENTS
+// =====================================================
+
 router.get("/", getStudents);
 
-// GET ONE
+// =====================================================
+// GET SINGLE STUDENT
+// =====================================================
+
 router.get("/:id", getStudentById);
 
-// UPDATE
+// =====================================================
+// UPDATE STUDENT
+// =====================================================
+
 router.put("/:id", updateStudent);
 
-// DELETE
+// =====================================================
+// DELETE STUDENT
+// =====================================================
+
 router.delete("/:id", deleteStudent);
 
 module.exports = router;
