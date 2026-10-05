@@ -1,26 +1,53 @@
+const bcrypt = require("bcryptjs");
 const Trainer = require("../models/trainer");
 
 // CREATE TRAINER
 const createTrainer = async (req, res) => {
   try {
-    const { name, course } = req.body;
+    const {
+      name,
+      email,
+      password,
+      course,
+    } = req.body;
 
-    if (!name || !course) {
+    if (!name || !email || !password || !course) {
       return res.status(400).json({
-        message: "Name and course are required",
+        message: "All fields are required",
       });
-    }     
+    }
+
+    const existingTrainer = await Trainer.findOne({
+      email,
+    });
+
+    if (existingTrainer) {
+      return res.status(400).json({
+        message: "Email already exists",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const trainer = await Trainer.create({
       name,
+      email,
+      password: hashedPassword,
       course,
     });
 
     res.status(201).json({
       message: "Trainer created successfully",
-      trainer,
+      trainer: {
+        _id: trainer._id,
+        name: trainer.name,
+        email: trainer.email,
+        course: trainer.course,
+      },
     });
   } catch (error) {
+    console.error("Create trainer error:", error);
+
     res.status(500).json({
       message: "Failed to create trainer",
       error: error.message,
@@ -31,10 +58,14 @@ const createTrainer = async (req, res) => {
 // GET ALL TRAINERS
 const getTrainers = async (req, res) => {
   try {
-    const trainers = await Trainer.find().sort({ createdAt: -1 });
+    const trainers = await Trainer.find()
+      .select("-password")
+      .sort({ createdAt: -1 });
 
     res.status(200).json(trainers);
   } catch (error) {
+    console.error("Get trainers error:", error);
+
     res.status(500).json({
       message: "Failed to fetch trainers",
       error: error.message,
@@ -45,7 +76,8 @@ const getTrainers = async (req, res) => {
 // GET TRAINER BY ID
 const getTrainerById = async (req, res) => {
   try {
-    const trainer = await Trainer.findById(req.params.id);
+    const trainer = await Trainer.findById(req.params.id)
+      .select("-password");
 
     if (!trainer) {
       return res.status(404).json({
@@ -55,6 +87,8 @@ const getTrainerById = async (req, res) => {
 
     res.status(200).json(trainer);
   } catch (error) {
+    console.error("Get trainer error:", error);
+
     res.status(500).json({
       message: "Failed to fetch trainer",
       error: error.message,
@@ -62,34 +96,51 @@ const getTrainerById = async (req, res) => {
   }
 };
 
-// UPDATE TRAINER - PUT
+// UPDATE TRAINER
 const updateTrainer = async (req, res) => {
   try {
-    const { name, course } = req.body;
+    const {
+      name,
+      email,
+      password,
+      course,
+    } = req.body;
 
-    const updatedTrainer = await Trainer.findByIdAndUpdate(
-      req.params.id,
-      {
-        name,
-        course,
-      },
-      {
-        new: true,
-        runValidators: true,
-      }
+    const trainer = await Trainer.findById(
+      req.params.id
     );
 
-    if (!updatedTrainer) {
+    if (!trainer) {
       return res.status(404).json({
         message: "Trainer not found",
       });
     }
 
+    trainer.name = name;
+    trainer.email = email;
+    trainer.course = course;
+
+    if (password) {
+      trainer.password = await bcrypt.hash(
+        password,
+        10
+      );
+    }
+
+    await trainer.save();
+
     res.status(200).json({
       message: "Trainer updated successfully",
-      trainer: updatedTrainer,
+      trainer: {
+        _id: trainer._id,
+        name: trainer.name,
+        email: trainer.email,
+        course: trainer.course,
+      },
     });
   } catch (error) {
+    console.error("Update trainer error:", error);
+
     res.status(500).json({
       message: "Failed to update trainer",
       error: error.message,
@@ -100,38 +151,51 @@ const updateTrainer = async (req, res) => {
 // PATCH TRAINER
 const patchTrainer = async (req, res) => {
   try {
-    const updateData = {};
-
-    if (req.body.name !== undefined) {
-      updateData.name = req.body.name;
-    }
-
-    if (req.body.course!== undefined) {
-      updateData.course = req.body.course;
-    }
-
-    const updatedTrainer = await Trainer.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      {
-        new: true,
-        runValidators: true,
-      }
+    const trainer = await Trainer.findById(
+      req.params.id
     );
 
-    if (!updatedTrainer) {
+    if (!trainer) {
       return res.status(404).json({
         message: "Trainer not found",
       });
     }
-      
+
+    if (req.body.name !== undefined) {
+      trainer.name = req.body.name;
+    }
+
+    if (req.body.email !== undefined) {
+      trainer.email = req.body.email;
+    }
+
+    if (req.body.course !== undefined) {
+      trainer.course = req.body.course;
+    }
+
+    if (req.body.password) {
+      trainer.password = await bcrypt.hash(
+        req.body.password,
+        10
+      );
+    }
+
+    await trainer.save();
+
     res.status(200).json({
-      message: "Trainer patched successfully",
-      trainer: updatedTrainer,
+      message: "Trainer updated successfully",
+      trainer: {
+        _id: trainer._id,
+        name: trainer.name,
+        email: trainer.email,
+        course: trainer.course,
+      },
     });
   } catch (error) {
+    console.error("Patch trainer error:", error);
+
     res.status(500).json({
-      message: "Failed to patch trainer",
+      message: "Failed to update trainer",
       error: error.message,
     });
   }
@@ -140,11 +204,11 @@ const patchTrainer = async (req, res) => {
 // DELETE TRAINER
 const deleteTrainer = async (req, res) => {
   try {
-    const deletedTrainer = await Trainer.findByIdAndDelete(
+    const trainer = await Trainer.findByIdAndDelete(
       req.params.id
     );
 
-    if (!deletedTrainer) {
+    if (!trainer) {
       return res.status(404).json({
         message: "Trainer not found",
       });
@@ -154,6 +218,8 @@ const deleteTrainer = async (req, res) => {
       message: "Trainer deleted successfully",
     });
   } catch (error) {
+    console.error("Delete trainer error:", error);
+
     res.status(500).json({
       message: "Failed to delete trainer",
       error: error.message,

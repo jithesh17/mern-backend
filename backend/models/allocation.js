@@ -8,6 +8,12 @@ const allocationSchema = new mongoose.Schema(
       required: true,
     },
 
+    course: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course",
+      required: true,
+    },
+
     studentBatch: {
       type: String,
       required: true,
@@ -25,7 +31,7 @@ const allocationSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["Active", "Inactive"],
+      enum: ["Active", "Completed", "Dropped"],
       default: "Active",
     },
   },
@@ -34,4 +40,7 @@ const allocationSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Allocation", allocationSchema);
+module.exports = mongoose.model(
+  "Allocation",
+  allocationSchema
+);
