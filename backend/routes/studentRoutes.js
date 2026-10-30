@@ -1,4 +1,5 @@
 const express = require("express");
+const protect = require("../middleware/authMiddleware");
 
 const {
   createStudent,
@@ -7,6 +8,10 @@ const {
   updateStudent,
   deleteStudent,
   uploadStudentsFromExcel,
+  sendPasswordChangeOTP,
+  verifyPasswordOTP,
+  loginStudent,
+  changeStudentPassword,
 } = require("../controllers/studentController");
 
 const uploadExcel = require("../middleware/uploadExcel");
@@ -29,6 +34,17 @@ router.post(
   uploadStudentsFromExcel,
 );
 
+// =====================================================
+// STUDENT LOGIN
+// =====================================================
+
+router.post("/login", loginStudent);
+
+router.post("/send-password-otp", sendPasswordChangeOTP);
+
+router.post("/verify-password-otp", verifyPasswordOTP);
+
+router.post("/change-password", changeStudentPassword);
 // =====================================================
 // GET ALL STUDENTS
 // =====================================================

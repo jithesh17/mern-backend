@@ -1,4 +1,6 @@
 const express = require("express");
+const multer = require("multer");
+const protect = require("../middleware/authMiddleware");
 
 const {
   createMCQ,
@@ -7,29 +9,73 @@ const {
   getMCQById,
   updateMCQ,
   deleteMCQ,
+  uploadMCQsFromExcel,
+  submitMCQ,
+  getMyMCQResults
 } = require("../controllers/mcqController");
 
 const router = express.Router();
 
-// Create MCQ
+// ==================================================
+// MULTER CONFIGURATION
+// ==================================================
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+});
+
+// ==================================================
+// CREATE MCQ
+// ==================================================
+
 router.post("/", createMCQ);
 
-// Get all MCQs
+// ==================================================
+// UPLOAD MCQs FROM EXCEL
+// ==================================================
+
+router.post(
+  "/upload-excel",
+  upload.single("file"),
+  uploadMCQsFromExcel
+);
+
+
+router.post("/submit", protect, submitMCQ);
+
+router.get("/my-results", protect, getMyMCQResults);
+// ==================================================
+// GET ALL MCQs
+// ==================================================
+
 router.get("/", getAllMCQs);
 
-// Get MCQs for a specific sub course
+// ==================================================
+// GET MCQs BY SUB COURSE
+// ==================================================
+
 router.get(
   "/subcourse/:subCourseId",
   getMCQsBySubCourse
 );
 
-// Get single MCQ
+// ==================================================
+// GET SINGLE MCQ
+// ==================================================
+
 router.get("/:id", getMCQById);
 
-// Update MCQ
+// ==================================================
+// UPDATE MCQ
+// ==================================================
+
 router.put("/:id", updateMCQ);
 
-// Delete MCQ
+// ==================================================
+// DELETE MCQ
+// ==================================================
+
 router.delete("/:id", deleteMCQ);
+
 
 module.exports = router;
