@@ -1,4 +1,6 @@
+
 const express = require("express");
+const authMiddleware = require("../middleware/authMiddleware");
 
 const {
   createTrainer,
@@ -7,39 +9,27 @@ const {
   updateTrainer,
   patchTrainer,
   deleteTrainer,
-} = require("../controllers/trainerController");
+  loginTrainer,
+  getMyTrainer,
+} = require("../controllers/trainercontroller");
 
 const router = express.Router();
 
+// Login - token not required
+router.post("/login", loginTrainer);
 
-// CREATE TRAINER
-// POST /api/trainers
+// All routes below require a valid JWT token
+router.use(authMiddleware);
+
+// Logged-in trainer details
+router.get("/me", getMyTrainer);
+
+// Trainer CRUD
 router.post("/", createTrainer);
-
-
-// GET ALL TRAINERS
-// GET /api/trainers
 router.get("/", getTrainers);
-
-
-// GET TRAINER BY ID
-// GET /api/trainers/:id
 router.get("/:id", getTrainerById);
-
-
-// UPDATE TRAINER
-// PUT /api/trainers/:id
 router.put("/:id", updateTrainer);
-
-
-// PATCH TRAINER
-// PATCH /api/trainers/:id
 router.patch("/:id", patchTrainer);
-
-
-// DELETE TRAINER
-// DELETE /api/trainers/:id
 router.delete("/:id", deleteTrainer);
-
 
 module.exports = router;

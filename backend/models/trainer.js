@@ -32,4 +32,7 @@ const trainerSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Trainer", trainerSchema);
+module.exports = mongoose.model(
+  "Trainer",
+  trainerSchema
+);

@@ -1,10 +1,14 @@
+
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
-require("dotenv").config();
+
 // ==========================================
 // DATABASE
 // ==========================================
 const connectDB = require("./config/db");
+
 // ==========================================
 // ROUTES
 // ==========================================
@@ -15,16 +19,24 @@ const mcqRoutes = require("./routes/mcqRoutes");
 const subCourseRoutes = require("./routes/subCourseRoutes");
 const studentRoutes = require("./routes/studentRoutes");
 const studentReportRoutes = require("./routes/studentReportRoutes");
+const trainerReportRoutes = require("./routes/trainerReportRoutes");
+const batchRoutes = require("./routes/batchRoutes");
+const attendanceRoutes = require("./routes/attendanceRoutes");
+
 const protect = require("./middleware/authMiddleware");
+
+// Mail configuration
 require("./config/mail");
 
+// ==========================================
+// APP INITIALIZATION
+// ==========================================
 const app = express();
 
 // ==========================================
 // MIDDLEWARE
 // ==========================================
 app.use(cors());
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -34,41 +46,56 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static("uploads"));
 
 // ==========================================
-// MONGODB CONNECTION
-// ==========================================
-connectDB();
-
-// ==========================================
 // API ROUTES
 // ==========================================
 
-// Course
+// Course APIs
 app.use("/api/courses", courseRoutes);
 
-// Trainer
+// Trainer APIs
 app.use("/api/trainers", trainerRoutes);
 
-// Allocation
+// Allocation APIs
 app.use("/api/allocations", allocationRoutes);
 
-// MCQ
+// MCQ APIs
 app.use("/api/mcqs", mcqRoutes);
 
-// Sub Course
+// Sub Course APIs
 app.use("/api/subcourses", subCourseRoutes);
 
-// Student
+// Student APIs
 app.use("/api/students", studentRoutes);
 
+// Student Report APIs
 app.use("/api/student-report", studentReportRoutes);
+
+// Trainer Report APIs
+app.use("/api/trainer-report", trainerReportRoutes);
+
+// Batch APIs
+app.use("/api/batches", batchRoutes);
+
+// Attendance APIs
+app.use("/api/attendance", attendanceRoutes);
+
 // ==========================================
-// TEST ROUTE
+// PROTECTED TEST ROUTE
 // ==========================================
 app.get("/api/protected-test", protect, (req, res) => {
-  res.json({
-    message: "JWT authentication successful!",
-    studentId: req.student.id,
-  });
+    res.json({
+        message: "JWT authentication successful!",
+        studentId: req.student.id
+    });
+});
+
+// ==========================================
+// HOME / TEST ROUTE
+// ==========================================
+app.get("/", (req, res) => {
+    res.status(200).json({
+        message: "Backend API is running successfully"
+    });
 });
 
 // ==========================================
@@ -76,6 +103,17 @@ app.get("/api/protected-test", protect, (req, res) => {
 // ==========================================
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const startServer = async () => {
+    try {
+        await connectDB();
+
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+    } catch (error) {
+        console.error("Server startup failed:", error.message);
+        process.exit(1);
+    }
+};
+
+startServer();

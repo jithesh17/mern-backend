@@ -43,4 +43,4 @@ const allocationSchema = new mongoose.Schema(
 module.exports = mongoose.model(
   "Allocation",
   allocationSchema
-);
+);  
