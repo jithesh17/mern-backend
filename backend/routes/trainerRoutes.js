@@ -1,6 +1,5 @@
 
 const express = require("express");
-const authMiddleware = require("../middleware/authMiddleware");
 
 const {
   createTrainer,
@@ -13,18 +12,17 @@ const {
   getMyTrainer,
 } = require("../controllers/trainercontroller");
 
+const authMiddleware = require("../middleware/authMiddleware");
+
 const router = express.Router();
 
-// Login - token not required
+// Trainer login - no token required
 router.post("/login", loginTrainer);
 
-// All routes below require a valid JWT token
-router.use(authMiddleware);
+// Trainer profile - token required
+router.get("/me", authMiddleware, getMyTrainer);
 
-// Logged-in trainer details
-router.get("/me", getMyTrainer);
-
-// Trainer CRUD
+// Trainer management - no admin login required
 router.post("/", createTrainer);
 router.get("/", getTrainers);
 router.get("/:id", getTrainerById);
